@@ -69,6 +69,7 @@ export function projHandler(){
             if (enemies[j] && projectiles[i] && collision(enemies[j], projectiles[i]) && !projectiles[i].hitEnemies.has(enemies[j])){
                 projectiles[i].dealDamage(enemies[j])
                 projectiles[i].hitEnemies.add(enemies[j])
+                console.log(projectiles[i].hitEnemies.size)
                 projectiles[i].pierceAmount--;
 
                 if (projectiles[i].pierceAmount <= 0){
@@ -80,10 +81,18 @@ export function projHandler(){
             };
         }
         
-        if (projectiles[i] && projectiles[i].x > canvas.width - 50) {
+        if (projectiles[i] && projectiles[i].x > canvas.width - 10) {
             projectiles.splice(i, 1);
             i--
         }  
+    }
+}
+export function enemyHandler(){
+    for (let i = 0; i < enemies.length; i++){
+        if (enemies[i] && enemies[i].x <= 0){
+            enemies.splice(i, 1);
+            i--
+        }
     }
 }
 
