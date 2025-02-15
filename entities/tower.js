@@ -1,4 +1,5 @@
 import { BasicBullet } from "./projectiles/basicBullet.js";
+import { BasicPierce } from "./projectiles/basicPierce.js";
 
 export class Tower {
     constructor(x, y, row) {
@@ -13,7 +14,7 @@ export class Tower {
         if (this.timer <= 0) {
             enemies.forEach(enemy => {
                 if (Math.abs(enemy.y - this.y) < 10 && Math.abs(enemy.x - this.x) < this.range) {
-                    bullets.push(new BasicBullet(this.x + 25, this.y + 25, this.laneIndex));
+                    bullets.push(new BasicPierce(this.x + 25, this.y + 25, this.laneIndex));
                 }
             });
             this.timer = this.fireRate;

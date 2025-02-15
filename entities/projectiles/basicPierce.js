@@ -1,4 +1,4 @@
-export class BasicBullet {
+export class BasicPierce {
     constructor(x, y, row) {
         this.x = x;
         this.y = y;
@@ -6,9 +6,9 @@ export class BasicBullet {
         this.width = 5;
         this.height = 5;
         this.bulletDamage = 50;
-        this.pierceAmount = 0;
+        this.pierceAmount = 3;
         this.laneIndex = row;
-        this.hitEnemies = new set();
+        this.hitEnemies = new Set();
     }
 
     move() {
@@ -16,7 +16,7 @@ export class BasicBullet {
     }
 
     draw(ctx) {
-        ctx.fillStyle = "black";
+        ctx.fillStyle = "yellow";
         ctx.fillRect(this.x, this.y, this.width, this.height);
     }
 

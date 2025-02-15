@@ -66,22 +66,25 @@ export function projHandler(){
         
         // checks if projectile exists and is colliding with enemy, if true does damage, deletes projectile and reduces i by one to ensure a projectile is not skipped
         for (let j = 0; j < enemies.length; j++) {
-            if (enemies[j] && projectiles[i] && collision(enemies[j], projectiles[i])){
+            if (enemies[j] && projectiles[i] && collision(enemies[j], projectiles[i]) && !projectiles[i].hitEnemies.has(enemies[j])){
                 projectiles[i].dealDamage(enemies[j])
-                projectiles.splice(i, 1);
-                i--  
-                break; // to prevent an edge case that causes crashes
+                projectiles[i].hitEnemies.add(enemies[j])
+                projectiles[i].pierceAmount--;
+
+                if (projectiles[i].pierceAmount <= 0){
+                    projectiles.splice(i, 1);
+                    i--  
+                    break; // to prevent an edge case that causes crashes
+                }
+
             };
         }
         
         if (projectiles[i] && projectiles[i].x > canvas.width - 50) {
             projectiles.splice(i, 1);
             i--
-        }
-            
+        }  
     }
-
-    
 }
 
 
