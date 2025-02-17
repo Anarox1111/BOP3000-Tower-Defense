@@ -12,7 +12,12 @@
     <canvas id="gameCanvas"></canvas>
     <div id="ui">
         <button onclick="startWaveButton()">Start Wave</button>
+        <p>Wave: <span id="waveNumber">1</span></p>
         <p>Money: <span id="money">150</span></p>
+        <p>Lives: <span id="lives">5</span></p>
+        <p>Enemies Remaining: <span id="enemiesLeft">0</span></p>
+        <p>Next Wave In: <span id="countdown">0</span></p>
+        <button onclick="upgradeSelectedTower()">Upgrade Selected Tower</button>
     </div>
 </body>
 </html>
