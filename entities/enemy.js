@@ -15,6 +15,10 @@ export class Enemy {
             this.speed = 0.5;
             this.health = 200;
             this.color = "orange";
+        } else if (type === "boss") {
+            this.speed = 0.8;
+            this.health = 500;
+            this.color = "purple";
         } else {
             this.speed = 1;
             this.health = 100 + (wave * 10);
@@ -25,10 +29,13 @@ export class Enemy {
     move() {
         this.x -= this.speed;
         if (this.x <= 0) {
-            enemies.shift();
-            lives--;
-            livesDisplay.innerText = lives;
-            if (lives <= 0) restartGame();
+            let index = enemies.indexOf(this);
+            if (index !== -1) {
+                enemies.splice(index, 1); // Fjern kun denne fienden
+                lives--; // Reduser ett liv per fiende
+                livesDisplay.innerText = lives;
+                if (lives <= 0) restartGame();
+            }
         }
         
     }

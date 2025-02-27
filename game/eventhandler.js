@@ -7,12 +7,25 @@ export function handleCanvasClick(event) {
     const x = Math.floor((event.clientX - rect.left) / 50) * 50;
     const y = Math.floor((event.clientY - rect.top) / 50) * 50;
 
-    if (money >= 50) {
-        let row = y / 50;
-        towers.push(new Tower(x, y, row));
-        updateMoney("decrease", 50);
-        document.getElementById("money").innerText = money;
+    if (money >= 20) {
+        const newTower = new Tower(x, y, selectedTowerType); // Bruker valgt tårntype
+        towers.push(newTower);
+        money -= 20;
+        moneyDisplay.innerText = money;
     }
     
 }
+
+export function  handleCanvasUpgrade(event) {
+    const canvas = document.getElementById("contextmenu");
+    event.preventDefault();
+    const rect = canvas.getBoundingClientRect();
+    const x = Math.floor((event.clientX - rect.left) / gridSize) * gridSize;
+    const y = Math.floor((event.clientY - rect.top) / gridSize) * gridSize;
+    towers.forEach(tower => {
+        if (tower.x === x && tower.y === y) {
+            tower.upgrade();
+        }
+    });
+};
 
