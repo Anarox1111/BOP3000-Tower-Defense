@@ -8,8 +8,10 @@ export function handleCanvasClick(event) {
     const y = Math.floor((event.clientY - rect.top) / 50) * 50;
 
     if (money >= 20) {
-        const newTower = new Tower(x, y, selectedTowerType); // Bruker valgt tårntype
-        towers.push(newTower);
+        const newLaserTower = new Tower(x, y, "laser"); // Bruker valgt tårntype
+        const newRocketTower = new Tower(x, y, "rocket");
+        //const newNormalTower = new Tower(x, y, "normal");
+        towers.push(newLaserTower, newRocketTower);
         money -= 20;
         moneyDisplay.innerText = money;
     }
