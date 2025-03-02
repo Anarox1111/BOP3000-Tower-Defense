@@ -1,4 +1,6 @@
 import { Bullet } from "./projectiles/Bullet.js";
+import { LaserBeam } from "./projectiles/LaserBeam.js";
+import { Rocket } from "./projectiles/Rocket.js";
 import { collision } from "../game/hitreg.js";
 import { updateResources, towerDamageElement, towerUpgradePriceElement } from "../game/game.js";
 import { cellSize } from "../game/grid.js";
@@ -9,11 +11,11 @@ import { money, updateMoney } from "../game/game.js";
  *
 
  * @constructor (x, y, row)
- * Author:    Anarox
+ * Author:    Anarox, Randomfevva
  * Created:   25.01.2025
  **/
 export class Tower {
-    constructor(x, y) {
+    constructor(x, y, type = "normal") {
         this.x = x;
         this.y = y;
         this.health = 100;
@@ -25,23 +27,35 @@ export class Tower {
         this.upgradeCost = 150;
         this.upgrades = 0;
         this.selected = false;
-
-        // Tower Destruction
-        this.deathMessage = null;
-        this.deathMessageTimer = 0;
+        this.type = type;
 
         // Tower style
-        this.background = 'blue';
-        this.textColor = 'gold'
+        this.background = this.getColor();
+        this.textColor = 'gold';
+    }
+
+    getColor() {
+        switch (this.type) {
+            case "laser": return "brown";
+            case "rocket": return "darkred";
+            default: return "blue";
+        }
     }
 
     attack(enemies, bullets, towerIndex) {
         if (this.timer <= 0) {
             enemies.forEach(enemy => {
                 if (Math.abs(enemy.y - this.y) < 10 && Math.abs(enemy.x - this.x) < this.range) {
-                    const bullet = new Bullet(this.x, this.y, this.y);
-                    bullet.bulletDamage = this.damage;
-                    bullets.push(bullet);
+                    let projectile;
+                    if (this.type === "laser") {
+                        projectile = new LaserBeam(this.x, this.y, enemy.x, enemy.y);
+                    } else if (this.type === "rocket") {
+                        projectile = new Rocket(this.x, this.y, enemy);
+                    } else {
+                        projectile = new Bullet(this.x, this.y, this.y);
+                    }
+                    projectile.bulletDamage = this.damage;
+                    bullets.push(projectile);
                 }
             });
 
@@ -54,12 +68,7 @@ export class Tower {
 
             if (this.health <= 0) {
                 towers.splice(towerIndex, 1);
-                this.deathMessage = "-5 Resources";
-                this.deathMessageTimer = 60;
-
                 updateResources("decrease", 5);
-
-
                 for (let enemy of enemies) {
                     enemy.resumeMove();
                 }
@@ -71,21 +80,12 @@ export class Tower {
     }
 
     draw(ctx) {
-        if (this.selected) {
-            ctx.fillStyle = "lightblue";
-        } else {
-            ctx.fillStyle = this.background;
-        }
+        ctx.fillStyle = this.selected ? "lightblue" : this.background;
         ctx.fillRect(this.x + 2, this.y + 2, 50 - 4, 50 - 4);
-        if (this.selected) {
-            ctx.fillStyle = 'black'
-        } else {
-            ctx.fillStyle = this.textColor;
-        }
+        ctx.fillStyle = this.selected ? "black" : this.textColor;
         ctx.font = '20px Impact';
         ctx.textAlign = 'center';
         ctx.fillText(Math.floor(this.health), this.x + cellSize / 2, this.y + cellSize / 2);
-        
     }
 
     upgrade() {
