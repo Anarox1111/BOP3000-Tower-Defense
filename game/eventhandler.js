@@ -148,3 +148,82 @@ window.upgradeTower = () => {
 window.openTab = openTab;
 
 
+const keybindings = {
+    gameTab: 'q',
+    towerTab: 'w',
+    inventoryTab: 'e',
+    shopTab: 'r'
+};
+
+// Function to save keybindings to localStorage
+function saveKeybindings() {
+    localStorage.setItem('keybindings', JSON.stringify(keybindings));
+}
+
+// Function to load keybindings from localStorage
+function loadKeybindings() {
+    const saved = localStorage.getItem('keybindings');
+    if (saved) {
+        Object.assign(keybindings, JSON.parse(saved));
+    }
+    updateKeybindingInputs();
+}
+
+// Function to update the keybinding input fields
+function updateKeybindingInputs() {
+    document.getElementById('gameTabKey').value = keybindings.gameTab;
+    document.getElementById('towerTabKey').value = keybindings.towerTab;
+    document.getElementById('inventoryTabKey').value = keybindings.inventoryTab;
+    document.getElementById('shopTabKey').value = keybindings.shopTab;
+}
+
+// Function to handle keybinding setup
+function setupKeybinding(inputId, bindingKey) {
+    const input = document.getElementById(inputId);
+    input.addEventListener('click', () => {
+        input.value = 'Press a key...';
+        const handleKeyPress = (e) => {
+            const key = e.key.toLowerCase();
+            if (key.match(/^[a-z]$/)) {
+                keybindings[bindingKey] = key;
+                input.value = key;
+                saveKeybindings();
+                document.removeEventListener('keydown', handleKeyPress);
+            }
+        };
+        document.addEventListener('keydown', handleKeyPress);
+    });
+}
+
+// Initialize keybinding setup
+function initializeKeybindings() {
+    loadKeybindings();
+    setupKeybinding('gameTabKey', 'gameTab');
+    setupKeybinding('towerTabKey', 'towerTab');
+    setupKeybinding('inventoryTabKey', 'inventoryTab');
+    setupKeybinding('shopTabKey', 'shopTab');
+}
+
+// Handle keyboard shortcuts for tab switching
+document.addEventListener('keydown', (e) => {
+    const key = e.key.toLowerCase();
+    switch (key) {
+        case keybindings.gameTab:
+            document.querySelector('[data-tab="game-tab"]').click();
+            break;
+        case keybindings.towerTab:
+            document.querySelector('[data-tab="tower-tab"]').click();
+            break;
+        case keybindings.inventoryTab:
+            document.querySelector('[data-tab="inventory-tab"]').click();
+            break;
+        case keybindings.shopTab:
+            document.querySelector('[data-tab="shop-tab"]').click();
+            break;
+    }
+});
+
+// Initialize keybindings when the page loads
+window.addEventListener('load', initializeKeybindings);
+
+
