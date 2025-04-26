@@ -22,6 +22,10 @@
   },
   "homepage": "https://github.com/Anarox1111/BOP3000-Tower-Defense#readme",
   "devDependencies": {
+    "gh-pages": "^6.3.0",
     "vite": "^6.3.3"
+  },
+  "dependencies": {
+    "firebase": "^11.6.1"
   }
 }

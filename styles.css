@@ -284,7 +284,7 @@ canvas {
 
 .popup {
     display: flex;
-    position: fixed;
+    position: absolute;
     top: 0;
     left: 0;
     width: 100%;
@@ -293,7 +293,6 @@ canvas {
     justify-content: center;
     align-items: flex-start; /* Flytt innholdet til toppen */
     padding-top: 5vh; /* Juster hvor langt ned fra toppen */
-    z-index: 9999;
 }
 
 .popup-content {
@@ -317,7 +316,7 @@ canvas {
 
 /* Legger til plass til etikettene */
 .popup-content label {
-    display: block;
+    display: inline-block;
     margin-bottom: 5px;
 }
 
