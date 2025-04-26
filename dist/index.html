@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tower Defense Game</title>
+
+  <script type="module" crossorigin src="/assets/index-Cska2YnY.js"></script>
+  <link rel="stylesheet" crossorigin href="/assets/index-UkL8dcda.css">
+</head>
+<body>
+    <main>
+        <canvas id="gameCanvas"></canvas>
+        <div class="menu">
+            <div class="tabs">
+                <span onclick="openTab(this)" data-tab="game-tab">GAME</span>
+                <span class="selected" onclick="openTab(this)" data-tab="tower-tab">TOWER</span>
+                <span onclick="openTab(this)" data-tab="inventory-tab">INVENTORY</span>
+                <span onclick="openTab(this)" data-tab="shop-tab">SHOP</span>
+            </div>
+            <div class="tab game-tab">
+                <button class="start-wave-btn" onclick="startWaveButton()">Start Wave</button>
+                
+                <div class="auto-wave-control">
+                    <label for="autoWaveCheckbox">Auto Wave</label>
+                    <input type="checkbox" id="autoWaveCheckbox" onclick="toggleAutoWave()" onload="toggleAutoWave()">
+                </div>
+                
+                <p>Tower damage: <span id="towerDamageTotal">0</span></p>
+            
+                <!-- Knapp for å åpne settings -->
+                <button class="settings-btn">⚙️ Settings</button>
+
+            
+               <!-- Pop-up meny -->
+               <div id="settingsPopup" class="popup">
+               <div class="popup-content">
+               <h2>Game Settings</h2>
+               <br>
+               <label for="speedSlider">Speed:</label>
+               <input type="range" id="speedSlider" min="0" max="1.0" step="0.01">
+               <br>
+               <label for="volumeSlider">Volume:</label>
+               <input type="range" id="volumeSlider" min="0" max="1.0" step="0.01">
+               <br>
+               <button id="closeSettings">Close</button>
+              </div>
+            </div>    
+        </div>
+            <div class="tab tower-tab grid-split open">
+                <div class="grid grid-split">
+                    <h2 class="tab-title grid-full-width">Towers</h2>
+                    <div class="cards grid grid-full-width grid-split">
+                        <div class="card" tower-type = "basic">
+                            <img 
+                            src="" 
+                            alt=""
+                            >
+                            <p>Normal tower</p>
+                            <p class="tower-unlock-price-title"><span class="tower-unlock-price">200 ⚒️</span></p>    
+                        </div>
+                        <div class="card" tower-type = "sniper">
+                            <img 
+                            src="" 
+                            alt=""
+                            >
+                            <p>Sniper tower</p>    
+                            <p class="tower-unlock-price-title"><span class="tower-unlock-price">400 ⚒️</span></p>    
+                        </div>
+                        <div class="card" tower-type = "gatling">
+                            <img 
+                            src="" 
+                            alt=""
+                            >
+                            <p>Gatling tower</p>    
+                            <p class="tower-unlock-price-title"><span class="tower-unlock-price">1000 ⚒️</span></p>    
+                        </div>
+                        <div class="card" > <!-- tower-type = "laser" -->
+                            <img 
+                            src="" 
+                            alt=""
+                            >
+                            <p>Laser tower</p>    
+                            <p class="tower-unlock-price-title"><span class="tower-unlock-price">2500 ⚒️</span></p>    
+                        </div>
+                        <div class="card" tower-type = "rocket">
+                            <img 
+                            src="" 
+                            alt=""
+                            >
+                            <p>rocket tower</p>    
+                            <p class="tower-unlock-price-title"><span class="tower-unlock-price">5000 ⚒️</span></p>    
+                        </div>
+                        <div class="card"> <!-- tower-type = "tower a" -->
+                            <img 
+                            src="" 
+                            alt=""
+                            >
+                            <p>Tower A</p>    
+                            <p class="tower-unlock-price-title"><span class="tower-unlock-price">8000 ⚒️</span></p>    
+                        </div>
+                    </div>
+                </div>           
+                <div class="tower-info grid grid-split">
+                    <h2 class="tab-title grid-full-width">Tower Info</h2>
+                    <div class="cards grid grid-full-width">
+                        <div class="display-card">
+                            <img src="" alt="">
+                            <p class="tower-title"><span class="tower-title-display"></span>, Lvl <span class="tower-lvl"></span></p>
+                            <p class="hp-title">HP: <span class="hp-title-display"></span> ❤️</p>
+                            <p class="range-title">Range: <span class="range-title-display"></span> 🏹</p>
+                            <p class="firerate-title">Fire rate: <span class="firerate-title-display"></span> 💥</p>
+                            <p class="price-title">Price: <span class="tower-upgrade-price green-text"></span> 💶</p>
+                        </div>
+                    </div>
+                <!-- <button class="unlock-btn unlock hover-unlock">UNLOCK 🔒🔓</button> -->
+                <button class="tower-upgrade-btn" onclick="upgradeTower()">Insufficient balance</button>
+                </div>
+            </div>
+                <div class="tab inventory-tab grid-split">
+                    <div class="grid grid-split">
+                        <h2 class="tab-title grid-full-width">Inventory</h2>
+                        <div id=inventoryCards class="slots grid grid-full-width grid-split">
+                        </div>
+                    </div>
+                    <div class="grid grid-split">
+                        <h2 class="tab-title grid-full-width">Selected Item:</h2>
+                        <div class="itemdesc grid grid-full-width">
+                            <div class="desc">
+                                <img id="selected-item-image" src="" alt="">
+                                <h1 id="selected-item-name">Ingen Items Valgt!</h1>
+                                <p id="selected-item-description"> Velg et item.</p>
+                                <button class="usebtn" id="use-button" onclick="useItem()" tower-type = "barricade"> Use </button>
+                                <button class="deletebtn" id="delete-button" onclick="deleteButton()"> Delete </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="tab shop-tab grid-split">
+                    <div class="grid grid-split">
+                        <h2 class="tab-title grid-full-width">Available Items</h2>
+                        <div class="shop-items grid grid-full-width grid-split">
+                            <!-- Dynamisk genererte item cards her -->
+                        </div>
+                    </div>              
+                    <div class="grid grid-split">
+                        <h2 class="tab-title grid-full-width">Item Details</h2>
+                        <div class="itemdesc grid grid-full-width">
+                            <div class="desc">
+                                <img id="item-image" src="images/item.png" alt="Item">
+                                <p id="item-name"></p>
+                                <p id="item-description"></p>
+                                <p>Price: <span id="item-price"></span>💶</p>
+                                <button id="buy-button" class="buybtn">Buy</button>
+                            </div>
+                        </div>
+                    </div>               
+                    <!-- Bruk kun én script-tag med type="module" -->
+                </div>                
+                <div id="purchase-message" class="hidden">
+                    <div class="message-box">Item purchased!</div>
+                  </div>
+            </div>     
+        </main> 
+    </body>
+    </html>

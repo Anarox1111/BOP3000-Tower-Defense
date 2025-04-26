@@ -501,4 +501,144 @@ canvas {
     transform: scale(1.05);
 }
 
+
+/*--- Login & Register ---*/
+
+.login-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.label-auth {
+    color: rgb(0, 0, 0);
+}
+
+.login-form {
+    background-color: #222;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+}
+
+.login-form input {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+}   
+
+.login-form button {
+    width: 100%;
+    padding: 10px;
+    border-radius: 5px;
+    background-color: #4caf50;
+}
+
+
+
+  
+
+/* Authentication Styles */
+.auth-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background: linear-gradient(135deg, #1a1a1a, #2a2a2a);
+}
+
+.auth-form-container {
+    background-color: rgba(255, 165, 0, 0.8);
+    padding: 2rem;
+    border-radius: 10px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+    width: 100%;
+    max-width: 400px;
+}
+
+.auth-title {
+    color: #000;
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.auth-form-group {
+    margin-bottom: 1.5rem;
+}
+
+.auth-label {
+    display: block;
+    color: #000;
+    margin-bottom: 0.5rem;
+}
+
+.auth-input {
+    width: 100%;
+    padding: 0.8rem;
+    border: none;
+    border-radius: 5px;
+    background-color: rgba(255, 255, 255, 0.9);
+    font-size: 1rem;
+}
+
+.auth-input::placeholder {
+    color: #666;
+}
+
+.auth-button {
+    width: 100%;
+    padding: 1rem;
+    background-color: #808080;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+}
+
+.auth-button.active {
+    background-color: #4CAF50;
+}
+
+.auth-button.active.upgrade {
+    background: linear-gradient(90deg, #6afe4c, #ffac33, #00ea69, #6afe4c);
+    background-size: 350% 350%;
+    cursor: pointer;
+    box-shadow: 0 0 15px #c5eb1f, 0 0 10px #d39103;
+    animation: smooth-gradient 2s infinite alternate ease-in-out;
+}
+
+.auth-button.active.upgrade:hover {
+    background-image: linear-gradient(#6afe4c, #00ea69);
+    border: 3px solid rgba(0, 0, 0, 0.623);
+    box-shadow: 0 0 15px #00ea69, 0 0 30px #6afe4c;
+    color: white;
+    text-shadow: black 1px 1px;
+    transition: all 0.5s ease-in-out;
+}
+
+.auth-link {
+    text-align: center;
+    margin-top: 1rem;
+}
+
+.auth-link a {
+    color: #000;
+    text-decoration: none;
+}
+
+.auth-link a:hover {
+    text-decoration: underline;
+}
+
+.auth-error {
+    color: #ff0000;
+    text-align: center;
+    margin-top: 1rem;
+    display: none;
+}
+
   

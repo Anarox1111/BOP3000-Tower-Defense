@@ -148,6 +148,13 @@ window.upgradeTower = () => {
 window.openTab = openTab;
 
 
+/**
+ * Keybinding event for tab switching.
+ *               
+* @description Sets keybindings, loads keybindings, and uses them for tab switching in the menu. 
+* @author:    Anarox
+* Created:   25.04.2025
+**/
 const keybindings = {
     gameTab: 'q',
     towerTab: 'w',
@@ -155,12 +162,10 @@ const keybindings = {
     shopTab: 'r'
 };
 
-// Function to save keybindings to localStorage
 function saveKeybindings() {
     localStorage.setItem('keybindings', JSON.stringify(keybindings));
 }
 
-// Function to load keybindings from localStorage
 function loadKeybindings() {
     const saved = localStorage.getItem('keybindings');
     if (saved) {
@@ -177,7 +182,6 @@ function updateKeybindingInputs() {
     document.getElementById('shopTabKey').value = keybindings.shopTab;
 }
 
-// Function to handle keybinding setup
 function setupKeybinding(inputId, bindingKey) {
     const input = document.getElementById(inputId);
     input.addEventListener('click', () => {
