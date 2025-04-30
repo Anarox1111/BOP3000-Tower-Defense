@@ -1,5 +1,5 @@
 import { rows } from "./grid.js"; 
-import { enemies, getRandomEnemyType } from "../entities/enemies/Enemy.js";
+import { enemies, getRandomEnemyType } from "../entities/enemies/enemy.js";
 import { createEnemy } from "../entities/enemies/enemyFactory.js";
 
 let wave = 0;
