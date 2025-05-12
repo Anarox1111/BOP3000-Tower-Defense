@@ -361,10 +361,9 @@ canvas {
 
 
 
-/* --- Generell styling --- */
+/* --- Shop Styling --- */
 
 
-/* Holder items i en ryddig liste */
 .shop-items {
     display: grid;
     grid-template-columns: 1fr;
@@ -372,7 +371,7 @@ canvas {
     justify-items: center;
 }
 
-/* Hver enkelt vare i butikken */
+/* Shop Items */
 .shop-item {
     background: #222;
     padding: 15px;
@@ -542,43 +541,6 @@ canvas {
     transform: scale(1.05);
 }
 
-
-/*--- Login & Register ---*/
-
-.login-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-}
-
-.label-auth {
-    color: rgb(0, 0, 0);
-}
-
-.login-form {
-    background-color: #222;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-}
-
-.login-form input {
-    width: 100%;
-    padding: 10px;
-    margin-bottom: 10px;
-    border-radius: 5px;
-}   
-
-.login-form button {
-    width: 100%;
-    padding: 10px;
-    border-radius: 5px;
-    background-color: #4caf50;
-}
-
-
-
   
 
 /* Authentication Styles */
@@ -591,7 +553,7 @@ canvas {
 }
 
 .auth-form-container {
-    background-color: rgba(255, 165, 0, 0.8);
+    background-color: #423d3d;
     padding: 2rem;
     border-radius: 10px;
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
@@ -600,9 +562,10 @@ canvas {
 }
 
 .auth-title {
-    color: #000;
+    color: white;
     text-align: center;
     margin-bottom: 2rem;
+    user-select: none;
 }
 
 .auth-form-group {
@@ -613,23 +576,25 @@ canvas {
     display: block;
     color: #000;
     margin-bottom: 0.5rem;
+    user-select: none;
 }
 
 .auth-input {
-    width: 100%;
-    padding: 0.8rem;
-    border: none;
+    width: 22rem;
+    padding: 1rem;
     border-radius: 5px;
-    background-color: rgba(255, 255, 255, 0.9);
+    background-color: rgba(24, 26, 27, 0.9);
     font-size: 1rem;
+    color: #fff;
 }
 
 .auth-input::placeholder {
     color: #666;
 }
 
+
 .auth-button {
-    width: 100%;
+    width: 97%;
     padding: 1rem;
     background-color: #808080;
     color: white;
@@ -667,8 +632,9 @@ canvas {
 }
 
 .auth-link a {
-    color: #000;
+    color: white;
     text-decoration: none;
+    user-select: none;
 }
 
 .auth-link a:hover {

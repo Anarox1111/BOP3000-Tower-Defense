@@ -68,9 +68,9 @@ export const initRegisterPage = () => {
         if (email && password && confirmPassword && 
             validatePassword(password) && 
             password === confirmPassword) {
-            registerButton.classList.add('active-register', 'upgrade');
+            registerButton.classList.add('active', 'upgrade');
         } else {
-            registerButton.classList.remove('active-register', 'upgrade');
+            registerButton.classList.remove('active', 'upgrade');
         }
     }
 
