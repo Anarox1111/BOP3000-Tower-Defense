@@ -1,6 +1,8 @@
 import { rows } from "./grid.js"; 
 import { enemies, getRandomEnemyType } from "../entities/enemies/enemy.js";
 import { createEnemy } from "../entities/enemies/enemyFactory.js";
+import { Enemy } from "../entities/enemies/enemy.js";
+import { updateFirebaseStats, gameStats } from "./game.js";
 
 let wave = 0;
 let isWaveStarted = false;
@@ -25,6 +27,14 @@ export async function spawnWave() {
     wave++;
     isWaveStarted = true;
 
+    // Update wave stats
+    gameStats.highestWaveReached = Math.max(gameStats.highestWaveReached, wave);
+    
+    // Check if this is a boss wave (every 5th wave)
+    if (wave % 5 === 0) {
+        gameStats.totalBossStagesReached++;
+    }
+
     // Set amount of enemies to spawn
     const spawnEnemies = wave * 2;
     for (let i = 0; i < spawnEnemies; i++) {
@@ -46,12 +56,13 @@ export function startWaveButton() {
 }
 
 export function tryEndWave() {
-    if (enemies.length >= 1) {
-        // There's still enemies alive
-        return;
+    if (enemies.length === 0) {
+        // Update stats at the end of each wave
+        updateFirebaseStats();
+        isWaveStarted = false; // Allow starting a new wave
+        return true;
     }
-
-    isWaveStarted = false;
+    return false;
 }
 
 export function getWave() {

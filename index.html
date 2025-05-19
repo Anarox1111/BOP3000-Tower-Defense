@@ -5,14 +5,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tower Defense Game</title>
     <link rel="stylesheet" href="styles.css">
+    <!-- Your scripts -->
     <script src="game/settings.js" type="module"></script>
     <script type="module" src="/main.js"></script>
     <script src="game/eventhandler.js" type="module"></script>
     <script src="./entities/shop.js" type="module"></script>
     <script src="./entities/inventory.js" type="module"></script>
-
 </head>
 <body>
+    <div class="user-info">
+        <span id="userEmail"></span>
+        <button class="logout-btn">Logout</button>
+    </div>
     <main>
         <canvas id="gameCanvas"></canvas>
         <div class="menu">
@@ -186,7 +190,15 @@
                     <div class="message-box">Item purchased!</div>
                   </div>
             </div>   
-            <a href="auth/login.html">Login</a>  
+             
         </main> 
+        <!-- Auth initialization -->
+        <script type="module">
+            import { initAuthState, initAuthUI } from './auth/auth-state.js';
+            
+            // Initialize both auth state and UI
+            initAuthState();
+            initAuthUI();
+        </script>
     </body>
     </html>

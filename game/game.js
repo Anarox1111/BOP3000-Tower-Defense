@@ -5,7 +5,28 @@ import { createGrid, handleGameGrid, topBar } from "./grid.js";
 import { startWaveButton } from "./wave.js";
 import { collision } from "./hitreg.js";
 import { getWave, tryEndWave } from "./wave.js";
+import { auth } from "../auth/firebase-config.js";
+import { updateUserStats } from "../auth/auth-service.js";
 
+// Game stats tracking
+let gameStats = {
+    totalTowerDamage: 0,
+    totalResourcesGathered: 0,
+    totalEnemiesKilled: 0,
+    totalMoneySpent: 0,
+    highestWaveReached: 0,
+    totalBossStagesReached: 0
+};
+
+// Stats update interval (every 30 seconds)
+const STATS_UPDATE_INTERVAL = 30000;
+
+// Set up periodic stats update
+setInterval(() => {
+    if (!gameOver) {
+        updateFirebaseStats();
+    }
+}, STATS_UPDATE_INTERVAL);
 
 export const canvas = document.getElementById("gameCanvas");
 export const ctx = canvas.getContext("2d");
@@ -13,7 +34,6 @@ export const ctx = canvas.getContext("2d");
 export const towerDamageElement = document.querySelector('.tower-damage');
 export const towerUpgradePriceElement = document.querySelector('.tower-upgrade-price');
 export const towerUpgradeElement = document.querySelector('.tower-upgrade-btn');
-
 
 window.startWaveButton = startWaveButton;
 
@@ -92,6 +112,7 @@ export function updateGameState() {
         if (enemy.health <= 0) {
             updateMoney('increase', 20);
             updateResources('increase', 1);
+            gameStats.totalEnemiesKilled++;
             continue;
         }
 
@@ -113,6 +134,7 @@ export function updateGameState() {
     
     if (resources <= 0) {
         gameOver = true;
+        updateFirebaseStats();
     }
 
     updateTowerStats(selectedTower);
@@ -138,6 +160,7 @@ export function updateMoney(action, amount) {
             break;
         case "decrease":
             money -= amount;
+            gameStats.totalMoneySpent += amount;
             break;
         default:
             console.warn(`Unknown action: "${action}". No changes made.`);
@@ -164,6 +187,7 @@ export function updateResources(action, amount) {
     switch (action) {
         case "increase":
             resources += amount;
+            gameStats.totalResourcesGathered += amount;
             break;
         case "decrease":
             resources -= amount;
@@ -247,30 +271,36 @@ export function projectileHandler(){
 
         if (projectile.name === "laser") {
             for (let enemy of enemies) {
-                if ( projectile.doesLaserHit(enemy) && projectile.localIframes <= 0 && projectile.lifetime > 0) {
+                if (projectile.doesLaserHit(enemy) && projectile.localIframes <= 0 && projectile.lifetime > 0) {
                     projectile.dealDamage(enemy);
+                    // Track laser damage
+                    gameStats.totalTowerDamage += projectile.bulletDamage;
                     activeProjectiles.push(projectile);
                 }
             }
-        } else{
-
+        } else {
             for (let enemy of enemies) {
-                if (collision(enemy, projectile, "boundingBox") && projectile.pierceAmount > 0 && !projectile.hitEnemies.has(enemy)) { // bruker bounding box hot detection for bullets
-
-                    if (projectile.name == "rocket"){
+                if (collision(enemy, projectile, "boundingBox") && projectile.pierceAmount > 0 && !projectile.hitEnemies.has(enemy)) {
+                    if (projectile.name == "rocket") {
                         projectile.dealDamage(enemy, enemies);
-                    } else{
+                        // Track rocket explosion damage (including AoE)
+                        const enemiesInAoe = enemies.filter(e => 
+                            Math.abs(e.x - projectile.x) < projectile.aoe && 
+                            Math.abs(e.y - projectile.y) < projectile.aoe
+                        ).length;
+                        gameStats.totalTowerDamage += projectile.bulletDamage * enemiesInAoe;
+                    } else {
                         projectile.dealDamage(enemy);
+                        // Track regular bullet damage
+                        gameStats.totalTowerDamage += projectile.bulletDamage;
                     }
-                    if (projectile.pierceAmount <= 0){    // om du mener dette burde være en switch ta det opp med ask så fikser jeg det
+                    if (projectile.pierceAmount <= 0) {
                         finalHit = true;
                     }
                     break;
                 }
             }
         }
-
-        
 
         if (!finalHit && projectile.x < canvas.width - 50) {
             activeProjectiles.push(projectile);
@@ -280,3 +310,42 @@ export function projectileHandler(){
     projectiles.length = 0;
     projectiles.push(...activeProjectiles);
 }
+
+/**
+ * Updates the game stats in Firebase if they are better than the current stats
+ * @author:    Assistant
+ * Created:   Current Date
+ */
+async function updateFirebaseStats() {
+    const user = auth.currentUser;
+    if (!user) return;
+
+    try {
+        await updateUserStats(user.uid, gameStats);
+    } catch (error) {
+        console.error("Failed to update stats:", error);
+    }
+}
+
+// Export updateFirebaseStats for use in wave.js
+export { updateFirebaseStats };
+
+// Add event listener for when the game window is closed or navigated away from
+window.addEventListener('beforeunload', () => {
+    updateFirebaseStats();
+});
+
+// Add event listener for when the user switches tabs or minimizes the window
+document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'hidden') {
+        updateFirebaseStats();
+    }
+});
+
+// Export the function to update tower damage for use in tower.js
+export function updateTowerDamage(damage) {
+    gameStats.totalTowerDamage += damage;
+}
+
+// Export gameStats for use in other modules
+export { gameStats };

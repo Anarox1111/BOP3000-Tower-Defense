@@ -1,6 +1,6 @@
 import { Bullet } from "../projectiles/Bullet.js";
 import { collision } from "../../game/hitreg.js";
-import { updateResources, towerDamageElement, towerUpgradePriceElement } from "../../game/game.js";
+import { updateResources, towerDamageElement, towerUpgradePriceElement, updateTowerDamage } from "../../game/game.js";
 import { cellSize } from "../../game/grid.js";
 import { money, updateMoney } from "../../game/game.js";
 

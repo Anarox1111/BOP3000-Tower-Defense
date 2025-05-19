@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Leaderboard - BOP3000 Tower Defense</title>
+    <link rel="stylesheet" href="../styles.css">
+</head>
+<body>
+    <a href="../index.html" class="back-button">← Back to Game</a>
+    <div class="leaderboard-container">
+        <h2 class="leaderboard-title">🏆 Global Leaderboard</h2>
+        
+        <div class="stats-container">
+            <!-- Top Tower Damage -->
+            <div class="stat-item">
+                <span class="stat-icon">🗼</span>
+                <div class="stat-info">
+                    <span class="stat-label">Top Tower Damage:</span>
+                    <span class="stat-holder" id="top-tower-damage-holder">-</span>
+                    <span class="stat-value" id="top-tower-damage">0</span>
+                </div>
+            </div>
+
+            <!-- Top Resources -->
+            <div class="stat-item">
+                <span class="stat-icon">💎</span>
+                <div class="stat-info">
+                    <span class="stat-label">Most Resources:</span>
+                    <span class="stat-holder" id="top-resources-holder">-</span>
+                    <span class="stat-value" id="top-resources">0</span>
+                </div>
+            </div>
+
+            <!-- Top Enemies Killed -->
+            <div class="stat-item">
+                <span class="stat-icon">💀</span>
+                <div class="stat-info">
+                    <span class="stat-label">Most Enemies Killed:</span>
+                    <span class="stat-holder" id="top-enemies-holder">-</span>
+                    <span class="stat-value" id="top-enemies">0</span>
+                </div>
+            </div>
+
+            <!-- Top Money Spent -->
+            <div class="stat-item">
+                <span class="stat-icon">💰</span>
+                <div class="stat-info">
+                    <span class="stat-label">Most Money Spent:</span>
+                    <span class="stat-holder" id="top-money-holder">-</span>
+                    <span class="stat-value" id="top-money">0</span>
+                </div>
+            </div>
+
+            <!-- Highest Wave -->
+            <div class="stat-item">
+                <span class="stat-icon">🌊</span>
+                <div class="stat-info">
+                    <span class="stat-label">Highest Wave:</span>
+                    <span class="stat-holder" id="top-wave-holder">-</span>
+                    <span class="stat-value" id="top-wave">0</span>
+                </div>
+            </div>
+
+            <!-- Most Boss Stages -->
+            <div class="stat-item">
+                <span class="stat-icon">👑</span>
+                <div class="stat-info">
+                    <span class="stat-label">Most Boss Stages:</span>
+                    <span class="stat-holder" id="top-bosses-holder">-</span>
+                    <span class="stat-value" id="top-bosses">0</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Player Rankings -->
+        <div class="rankings-section">
+            <h3 class="rankings-title">Top Players</h3>
+            <div class="rankings-list" id="rankings-list">
+                <!-- Rankings will be populated by JavaScript -->
+            </div>
+        </div>
+
+        <!-- Theme Switcher -->
+        <div class="theme-switcher">
+            <label class="switch">
+                <input type="checkbox" id="theme-toggle">
+                <span class="slider round"></span>
+            </label>
+            <span class="theme-label">🌙</span>
+        </div>
+
+        <!-- Player Stats Modal -->
+        <div id="player-stats-modal" class="modal">
+            <div class="modal-content">
+                <span class="close-button">&times;</span>
+                <div class="player-stats-header">
+                    <img id="modal-player-flag" class="player-flag" src="" alt="Player nationality">
+                    <h2 id="modal-player-name"></h2>
+                </div>
+                <div class="player-stats-grid">
+                    <div class="modal-stat-item">
+                        <span class="stat-icon">🗼</span>
+                        <span class="stat-label">Tower Damage:</span>
+                        <span class="stat-value" id="modal-tower-damage">0</span>
+                    </div>
+                    <div class="modal-stat-item">
+                        <span class="stat-icon">💎</span>
+                        <span class="stat-label">Resources:</span>
+                        <span class="stat-value" id="modal-resources">0</span>
+                    </div>
+                    <div class="modal-stat-item">
+                        <span class="stat-icon">💀</span>
+                        <span class="stat-label">Enemies Killed:</span>
+                        <span class="stat-value" id="modal-enemies">0</span>
+                    </div>
+                    <div class="modal-stat-item">
+                        <span class="stat-icon">💰</span>
+                        <span class="stat-label">Money Spent:</span>
+                        <span class="stat-value" id="modal-money">0</span>
+                    </div>
+                    <div class="modal-stat-item">
+                        <span class="stat-icon">🌊</span>
+                        <span class="stat-label">Highest Wave:</span>
+                        <span class="stat-value" id="modal-wave">0</span>
+                    </div>
+                    <div class="modal-stat-item">
+                        <span class="stat-icon">👑</span>
+                        <span class="stat-label">Boss Stages:</span>
+                        <span class="stat-value" id="modal-bosses">0</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { 
+            getFirestore, 
+            collection, 
+            getDocs,
+            query,
+            orderBy,
+            limit,
+            where,
+            doc,
+            getDoc 
+        } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { auth } from "../auth/firebase-config.js";
+
+        const db = getFirestore();
+
+        // Function to format large numbers
+        function formatNumber(num) {
+            return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        }
+
+        // Function to show player stats modal
+        async function showPlayerStats(username) {
+            try {
+                // Query Firestore for the player's data
+                const usersRef = collection(db, "users");
+                const q = query(usersRef, where("username", "==", username));
+                const querySnapshot = await getDocs(q);
+                
+                if (!querySnapshot.empty) {
+                    const userData = querySnapshot.docs[0].data();
+                    const stats = userData.stats || {};
+                    
+                    // Update modal content
+                    document.getElementById('modal-player-name').textContent = userData.username;
+                    document.getElementById('modal-player-flag').src = `https://flagcdn.com/w20/${userData.nationality.toLowerCase()}.png`;
+                    document.getElementById('modal-tower-damage').textContent = formatNumber(stats.totalTowerDamage || 0);
+                    document.getElementById('modal-resources').textContent = formatNumber(stats.totalResourcesGathered || 0);
+                    document.getElementById('modal-enemies').textContent = formatNumber(stats.totalEnemiesKilled || 0);
+                    document.getElementById('modal-money').textContent = formatNumber(stats.totalMoneySpent || 0);
+                    document.getElementById('modal-wave').textContent = formatNumber(stats.highestWaveReached || 0);
+                    document.getElementById('modal-bosses').textContent = formatNumber(stats.totalBossStagesReached || 0);
+                    
+                    // Show the modal
+                    const modal = document.getElementById('player-stats-modal');
+                    modal.style.display = 'flex';
+                }
+            } catch (error) {
+                console.error("Error fetching player stats:", error);
+            }
+        }
+
+        // Function to update leaderboard stats
+        async function updateLeaderboardStats() {
+            try {
+                const usersRef = collection(db, "users");
+                const usersSnapshot = await getDocs(usersRef);
+                
+                let topStats = {
+                    totalTowerDamage: { value: 0, holder: '' },
+                    totalResourcesGathered: { value: 0, holder: '' },
+                    totalEnemiesKilled: { value: 0, holder: '' },
+                    totalMoneySpent: { value: 0, holder: '' },
+                    highestWaveReached: { value: 0, holder: '' },
+                    totalBossStagesReached: { value: 0, holder: '' }
+                };
+
+                let playerRankings = [];
+
+                usersSnapshot.forEach(doc => {
+                    const userData = doc.data();
+                    const stats = userData.stats || {};
+                    const username = userData.username;
+
+                    // Update top stats with player names
+                    if ((stats.totalTowerDamage || 0) > topStats.totalTowerDamage.value) {
+                        topStats.totalTowerDamage = { value: stats.totalTowerDamage || 0, holder: username };
+                    }
+                    if ((stats.totalResourcesGathered || 0) > topStats.totalResourcesGathered.value) {
+                        topStats.totalResourcesGathered = { value: stats.totalResourcesGathered || 0, holder: username };
+                    }
+                    if ((stats.totalEnemiesKilled || 0) > topStats.totalEnemiesKilled.value) {
+                        topStats.totalEnemiesKilled = { value: stats.totalEnemiesKilled || 0, holder: username };
+                    }
+                    if ((stats.totalMoneySpent || 0) > topStats.totalMoneySpent.value) {
+                        topStats.totalMoneySpent = { value: stats.totalMoneySpent || 0, holder: username };
+                    }
+                    if ((stats.highestWaveReached || 0) > topStats.highestWaveReached.value) {
+                        topStats.highestWaveReached = { value: stats.highestWaveReached || 0, holder: username };
+                    }
+                    if ((stats.totalBossStagesReached || 0) > topStats.totalBossStagesReached.value) {
+                        topStats.totalBossStagesReached = { value: stats.totalBossStagesReached || 0, holder: username };
+                    }
+
+                    // Add to player rankings
+                    playerRankings.push({
+                        username: username,
+                        nationality: userData.nationality,
+                        highestWave: stats.highestWaveReached || 0,
+                        totalKills: stats.totalEnemiesKilled || 0
+                    });
+                });
+
+                // Update the display with values and holder names
+                document.getElementById('top-tower-damage').textContent = formatNumber(topStats.totalTowerDamage.value);
+                document.getElementById('top-tower-damage-holder').textContent = topStats.totalTowerDamage.holder;
+                
+                document.getElementById('top-resources').textContent = formatNumber(topStats.totalResourcesGathered.value);
+                document.getElementById('top-resources-holder').textContent = topStats.totalResourcesGathered.holder;
+                
+                document.getElementById('top-enemies').textContent = formatNumber(topStats.totalEnemiesKilled.value);
+                document.getElementById('top-enemies-holder').textContent = topStats.totalEnemiesKilled.holder;
+                
+                document.getElementById('top-money').textContent = formatNumber(topStats.totalMoneySpent.value);
+                document.getElementById('top-money-holder').textContent = topStats.totalMoneySpent.holder;
+                
+                document.getElementById('top-wave').textContent = formatNumber(topStats.highestWaveReached.value);
+                document.getElementById('top-wave-holder').textContent = topStats.highestWaveReached.holder;
+                
+                document.getElementById('top-bosses').textContent = formatNumber(topStats.totalBossStagesReached.value);
+                document.getElementById('top-bosses-holder').textContent = topStats.totalBossStagesReached.holder;
+
+                // Sort and display player rankings
+                playerRankings.sort((a, b) => b.highestWave - a.highestWave);
+                const rankingsList = document.getElementById('rankings-list');
+                rankingsList.innerHTML = '';
+
+                playerRankings.slice(0, 10).forEach((player, index) => {
+                    const rankingItem = document.createElement('div');
+                    rankingItem.className = 'ranking-item clickable';
+                    rankingItem.innerHTML = `
+                        <span class="rank">#${index + 1}</span>
+                        <img class="player-flag" src="https://flagcdn.com/w20/${player.nationality.toLowerCase()}.png" 
+                             alt="${player.nationality}" />
+                        <span class="player-name">${player.username}</span>
+                        <span class="player-wave">Wave ${player.highestWave}</span>
+                        <span class="player-kills">${formatNumber(player.totalKills)} kills</span>
+                    `;
+                    // Add click event to show player stats
+                    rankingItem.addEventListener('click', () => showPlayerStats(player.username));
+                    rankingsList.appendChild(rankingItem);
+                });
+
+            } catch (error) {
+                console.error("Error fetching leaderboard data:", error);
+            }
+        }
+
+        // Update leaderboard on load
+        updateLeaderboardStats();
+
+        // Theme switcher functionality
+        const themeToggle = document.getElementById('theme-toggle');
+        const themeLabel = document.querySelector('.theme-label');
+
+        // Check for saved theme preference
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme === 'light') {
+            document.body.classList.add('light-theme');
+            themeToggle.checked = true;
+            themeLabel.textContent = '☀️';
+        }
+
+        themeToggle.addEventListener('change', () => {
+            if (themeToggle.checked) {
+                document.body.classList.add('light-theme');
+                localStorage.setItem('theme', 'light');
+                themeLabel.textContent = '☀️';
+            } else {
+                document.body.classList.remove('light-theme');
+                localStorage.setItem('theme', 'dark');
+                themeLabel.textContent = '🌙';
+            }
+        });
+
+        // Modal close functionality
+        const modal = document.getElementById('player-stats-modal');
+        const closeButton = document.querySelector('.close-button');
+
+        closeButton.addEventListener('click', () => {
+            modal.style.display = 'none';
+        });
+
+        window.addEventListener('click', (event) => {
+            if (event.target === modal) {
+                modal.style.display = 'none';
+            }
+        });
+    </script>
+</body>
+</html> 

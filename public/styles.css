@@ -1,0 +1,651 @@
+* {
+    margin: 0;
+    padding: 0;
+}
+
+:root {
+    --background-color: #ffa500;
+    --border-color: #a37800;
+    --transparent: rgba(0,0,0,0);
+}
+
+body {
+    background-color: #202020;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+main {
+    display: flex;
+    flex-direction: column;
+}
+
+canvas {
+    /* border: 2px solid black; */
+    display: block;
+    margin: 1rem auto auto;
+    background-color: #f0f0f0;
+}
+
+.menu {
+    text-align: center;
+    background-color: #ffa500;
+}
+
+.tabs {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    text-align: center;
+    padding-top: .5rem;
+}
+
+.tabs>span {
+    cursor: pointer;
+    padding: 0.5rem 1rem;
+    border: 1px solid var(--transparent);
+    border-bottom-color: var(--border-color);
+}
+
+.tabs>span:not(.selected):hover {
+    background-color: var(--border-color);
+}
+
+.tabs>span.selected {
+    border-color: var(--border-color);
+    border-bottom-color: var(--transparent);
+}
+
+.tabs>span.selected:first-child {
+    border-left-color: var(--transparent);
+}
+.tabs>span.selected:last-child {
+    border-right-color: var(--transparent);
+}
+
+.tab {
+    display: none;
+    padding: 0.5rem 1rem;
+    text-align: left;
+}
+
+.tab.open {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-auto-rows: min-content;
+    gap: 1rem;
+}
+
+.tab.grid-split, 
+.grid-split {
+    grid-template-columns: repeat(2, 1fr);
+    align-items: start;
+    gap: 1rem;
+}
+
+.grid {
+    display: grid;
+}
+
+.grid-full-width {
+    grid-column: 1/-1;
+}
+
+.cards > .card {
+    background-color: #b67a20;
+    display: flex;
+    gap: .5rem;
+    align-items: center;
+    user-select: none;
+}
+
+.cards > .card img {
+    height: 48px;
+    aspect-ratio: 1/1;
+    margin: 1px;
+    user-select: none;
+}
+
+.tab-title {
+    text-align: center;
+    user-select: none;
+}
+
+.display-card {
+    justify-self: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;  /* Sentrer innhold horisontalt */
+    justify-content: center; /* Sentrer innhold vertikalt */
+    gap: .5em;
+    user-select: none;
+}
+
+.tower-title {
+    font-weight: bold;
+    color: white;
+    text-shadow: black 1px 1px;
+    user-select: none;
+}
+
+.display-card img {
+    height: 50px;
+    aspect-ratio: 1/1;
+    box-shadow: black 5px 3px 10px;
+}
+
+.price-placeholder {
+    margin-top: 0.5rem;
+}
+
+.tower-upgrade-btn,
+.start-wave-btn,
+.usebtn,
+.deletebtn,
+.unlock-btn {
+    padding: 0.5rem 1rem;
+    border-radius: 5px;
+    color: #0a0a23;
+    background-color: #feac32;
+    background-image: linear-gradient(#fecc4c, #ffac33);
+    border: 3px solid rgb(53, 49, 49);
+}
+
+.tower-upgrade-btn {
+    grid-column: 2;
+}
+
+#autoWaves {
+    grid-column: 2;
+}
+
+.active {
+    border: 3px solid #00ea69;
+}
+
+
+.upgrade {
+    background: linear-gradient(90deg, #6afe4c, #ffac33, #00ea69, #6afe4c);
+    background-size: 350% 350%;
+    cursor: pointer;
+    box-shadow: 0 0 15px #c5eb1f, 0 0 10px #d39103;
+
+    /* transition-timing-function: ease-in; */
+    animation: smooth-gradient 2s infinite alternate ease-in-out;
+}
+
+@keyframes smooth-gradient {
+    0% {
+        background-position: 0% 50%;
+    }
+    100% {
+        background-position: -50% 50%;
+        color: white;
+        border: 3px solid rgb(4, 59, 4);
+    }
+  }
+
+.hover-upgrade:hover {
+    background-image: linear-gradient(#6afe4c, #00ea69);
+    border: 3px solid rgba(0, 0, 0, 0.623);
+    box-shadow: 0 0 15px #00ea69, 0 0 30px #6afe4c;
+    color: white;
+    text-shadow: black 1px 1px;
+    transition: all 0.5s ease-in-out;
+
+}
+
+.unlock-btn {
+    grid-column: 2;
+}
+
+.unlock {
+    padding: 0.5rem 1rem;
+    border-radius: 5px;
+    cursor: pointer;
+    color: #0a0a23;
+    background-color: #feac32;
+    background-image: linear-gradient(#6afe4c, #ffac33);
+    border: 3px solid rgb(53, 49, 49);
+    transition: all 0.5s ease-in-out;
+}
+
+.hover-unlock:hover {
+    background-image: linear-gradient(#6afe4c, #00ea69);
+    border: 3px solid rgb(0, 119, 30);
+    box-shadow: 0 0 15px #00ea69, 0 0 30px #6afe4c;
+    color: white;
+    text-shadow: black 1px 1px;
+}
+
+.can-buy {
+    cursor: pointer;
+    color: #0a0a23;
+    border-radius: 5px;
+    background-color: #ff9900;
+    background-image: linear-gradient(#f0bc39, #b67a20);
+    border: 3px solid #0c0b09;
+    box-shadow: 0 0 5px #6200ea;
+    transition: all 0.3s ease-in-out;
+}
+
+.can-buy:hover {
+    box-shadow: 0 0 15px #6200ea, 0 0 30px #6200ea;
+}
+
+.red-text {
+    color: red;
+}
+
+.green-text {
+    color: green;
+}
+
+.hidden {
+    display: none;
+}
+
+/* Adjusting the settings layout */
+.settings-container {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+    max-width: 100px;
+    margin: 0 auto;
+    text-align: left;
+}
+
+/* Sliders and labels in the correct position */
+.setting {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.3rem;
+}
+
+.setting label {
+    font-size: 1rem;
+    font-weight: bold;
+    color: white;
+}
+
+.setting input[type="range"] {
+    width: 80%; /* Avoid full width */
+    justify-self: center;
+}
+
+/* Adjustment of cards */
+.cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 1rem;
+    max-width: 400px;
+    margin: 0 auto;
+}
+
+.popup {
+    display: flex;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh; /* dekker hele høyden av skjermen */
+    background: rgba(0, 0, 0, 0.5); /* semi-transparent sort */
+    justify-content: center;
+    align-items: flex-start; /* Flytt innholdet til toppen */
+    padding-top: 5vh; /* Juster hvor langt ned fra toppen */
+}
+
+.popup-content {
+    background: white;
+    padding: 40px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    text-align: center;
+    width: 300px;
+}
+
+
+/* Bredde og plassering av sliderne */
+.popup-content input[type="range"] {
+    width: 80%;  /* Gjør sliderne litt mindre enn hele bredden på containeren */
+    margin: 10px 0;  /* Plasserer avstand mellom sliderne */
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* Legger til plass til etikettene */
+.popup-content label {
+    display: inline-block;
+    margin-bottom: 5px;
+}
+
+/* Keybindings container */
+.keybindings {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 20px;
+}
+
+/* Keybindings overskrift */
+.keybindings h3 {
+    margin-bottom: 10px;
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+/* Hver rad (label + input) */
+.keybinding-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    align-items: center;
+    margin-bottom: 10px;
+    max-width: 250px;
+}
+
+/* Label for input */
+.keybinding-row label {
+    text-align: right;
+    font-weight: bold;
+}
+
+/* Input-felt */
+.keybinding-row input {
+    width: 100%;
+    padding: 5px;
+    box-sizing: border-box;
+    text-align: center;
+}
+
+
+
+/* --- Shop Styling --- */
+
+
+.shop-items {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 15px;
+    justify-items: center;
+}
+
+/* Shop Items */
+.shop-item {
+    background: #222;
+    padding: 15px;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    text-align: center;
+    width: 100px;
+}
+
+.shop-item img {
+    width: 80px;
+    height: auto;
+    border-radius: 5px;
+}
+
+.shop-item p {
+    color: white;
+    margin: 5px 0;
+}
+
+
+
+.itemdesc {
+    background-color: rgba(30, 30, 30, 0.85); /* Mørk semi-transparens */
+    border-radius: 20px;
+    padding: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.itemdesc .desc {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    color: white;
+    text-align: center;
+    gap: 10px;
+}
+
+.itemdesc .desc img {
+    width: 100px;
+    height: auto;
+    border-radius: 10px;
+    box-shadow: 0 0 8px rgba(255, 255, 255, 0.2);
+}
+
+/* Ny knappestil for kjøpsknappen */
+.buybtn {
+    font-weight: bold;
+    background-color: #fbbf24; /* gul */
+    color: white;
+    border: none;
+    border-radius: 10px;
+    padding: 10px 20px;
+    margin-top: 10px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: transform 0.1s ease;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+}
+
+.buybtn:hover {
+    background-color: #fbbf24;
+    transform: scale(1.05);
+}
+
+
+/*--- Inventory Slots ---*/
+.slots {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(125px, 1fr));
+    gap: 10px;
+    padding: 5px;
+    background-color: #b67a20;
+}
+
+.slot {
+    border: 1px solid#ccc;
+    border-radius: 8px;
+    padding: 10px;
+    text-align: center;
+    background-color: #f9f9f9;
+}
+
+.slots > .slot img {
+    height: 60px;
+    width: 60px;
+    aspect-ratio: 1/1;
+}
+
+/*--- Inventory Item-selection ---*/
+.itemdesc {
+    display: grid;
+    grid-template-columns: 1fr;
+}
+
+.desc {
+    text-align: center;
+    background-color: #b67a20;
+    gap: .5rem;
+    user-select: none;
+}
+
+.itemdesc > .desc img {
+    height: 195px;
+    aspect-ratio: 1/1;
+}
+
+.purchase-message {
+    position: fixed;
+    inset: 0; /* dekker hele viewporten */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  
+    /* Overlay stil */
+    background-color: rgba(0, 0, 0, 0.4); /* gir litt bakgrunn, kan endres om ønsket */
+    z-index: 9999;
+  }
+  
+.purchase-message .message-box {
+    background-color: #4caf50;
+    color: white;
+    padding: 1.25rem 2.5rem; /* tilsvarer 20px 40px */
+    border-radius: 0.625rem; /* 10px */
+    font-size: 1.5rem;
+    font-weight: bold;
+    box-shadow: 0 0 0.625rem rgba(0, 0, 0, 0.3); /* 10px */
+  }
+  
+  /* Inventory Use & Delete Buttons */
+.usebtn,
+.deletebtn {
+    font-weight: bold;
+    border: none;
+    border-radius: 10px;
+    padding: 10px 20px;
+    margin: 8px auto;
+    display: block;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.1s ease;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+}
+
+/* Use button style */
+.usebtn {
+    background-color: #28a745; /* grønn */
+    color: white;
+}
+
+.usebtn:hover {
+    background-color: #45c164;
+    transform: scale(1.05);
+}
+
+/* Delete button style */
+.deletebtn {
+    background-color: #dc3545; /* rød */
+    color: white;
+}
+
+.deletebtn:hover {
+    background-color: #ff5b6b;
+    transform: scale(1.05);
+}
+
+  
+
+/* Authentication Styles */
+.auth-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background: linear-gradient(135deg, #1a1a1a, #2a2a2a);
+}
+
+.auth-form-container {
+    background-color: #423d3d;
+    padding: 2rem;
+    border-radius: 10px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+    width: 100%;
+    max-width: 400px;
+}
+
+.auth-title {
+    color: white;
+    text-align: center;
+    margin-bottom: 2rem;
+    user-select: none;
+}
+
+.auth-form-group {
+    margin-bottom: 1.5rem;
+}
+
+.auth-label {
+    display: block;
+    color: #000;
+    margin-bottom: 0.5rem;
+    user-select: none;
+}
+
+.auth-input {
+    width: 22rem;
+    padding: 1rem;
+    border-radius: 5px;
+    background-color: rgba(24, 26, 27, 0.9);
+    font-size: 1rem;
+    color: #fff;
+}
+
+.auth-input::placeholder {
+    color: #666;
+}
+
+
+.auth-button {
+    width: 97%;
+    padding: 1rem;
+    background-color: #808080;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+}
+
+.auth-button.active {
+    background-color: #4CAF50;
+}
+
+.auth-button.active.upgrade {
+    background: linear-gradient(90deg, #6afe4c, #ffac33, #00ea69, #6afe4c);
+    background-size: 350% 350%;
+    cursor: pointer;
+    box-shadow: 0 0 15px #c5eb1f, 0 0 10px #d39103;
+    animation: smooth-gradient 2s infinite alternate ease-in-out;
+}
+
+.auth-button.active.upgrade:hover {
+    background-image: linear-gradient(#6afe4c, #00ea69);
+    border: 3px solid rgba(0, 0, 0, 0.623);
+    box-shadow: 0 0 15px #00ea69, 0 0 30px #6afe4c;
+    color: white;
+    text-shadow: black 1px 1px;
+    transition: all 0.5s ease-in-out;
+}
+
+.auth-link {
+    text-align: center;
+    margin-top: 1rem;
+}
+
+.auth-link a {
+    color: white;
+    text-decoration: none;
+    user-select: none;
+}
+
+.auth-link a:hover {
+    text-decoration: underline;
+}
+
+.auth-error {
+    color: #ff0000;
+    text-align: center;
+    margin-top: 1rem;
+    display: none;
+}
+
+  

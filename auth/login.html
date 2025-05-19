@@ -6,29 +6,140 @@
     <title>Login - BOP3000 Tower Defense</title>
     <link rel="stylesheet" href="../styles.css">
 </head>
-<body class="auth-container">
-    <div class="auth-form-container">
-        <h1 class="auth-title">Login</h1>
-        <form id="loginForm">
+<body>
+    <div class="auth-container">
+        <div class="auth-form-container">
+            <h2 class="auth-title">Login</h2>
             <div class="auth-form-group">
-                <label class="auth-label" for="email">Email or Username</label>
-                <input type="text" id="email" name="email" class="auth-input" placeholder="Enter your email or username" required>
+                <label class="auth-label" for="emailOrUsername">Email or Username</label>
+                <input type="text" id="emailOrUsername" class="auth-input" placeholder="Enter your email or username">
             </div>
             <div class="auth-form-group">
                 <label class="auth-label" for="password">Password</label>
-                <input type="password" id="password" name="password" class="auth-input" placeholder="Enter your password" required>
+                <input type="password" id="password" class="auth-input" placeholder="Enter your password">
             </div>
-            <button type="submit" class="auth-button">Login</button>
-            <div class="auth-error" id="errorMessage"></div>
-        </form>
-        <div class="auth-link">
-            <a href="register.html">Don't have an account? Register here</a>
+            <button id="loginBtn" class="auth-button">Login</button>
+            <div class="auth-link">
+                <a href="register.html">Don't have an account? Register here</a>
+            </div>
+            <div class="auth-link">
+                <a href="#" id="forgotPasswordLink">Forgot your password?</a>
+            </div>
+            <div id="authError" class="auth-error"></div>
+        </div>
+    </div>
+
+    <!-- Password Reset Modal -->
+    <div id="resetPasswordModal" class="modal">
+        <div class="modal-content">
+            <span class="close-button" id="closeResetModal">&times;</span>
+            <h2>Reset Password</h2>
+            <p>Enter your email address and we'll send you a link to reset your password.</p>
+            <div class="auth-form-group">
+                <input type="email" id="resetEmail" class="auth-input" placeholder="Enter your email">
+            </div>
+            <button id="resetPasswordBtn" class="auth-button">Send Reset Link</button>
+            <div id="resetMessage" class="auth-message"></div>
         </div>
     </div>
 
     <script type="module">
-        import { initLoginPage } from './auth-handler.js';
-        initLoginPage();
+        import { loginUser } from './auth-service.js';
+        import { auth } from './firebase-config.js';
+        import { sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+
+        const loginBtn = document.getElementById('loginBtn');
+        const emailOrUsernameInput = document.getElementById('emailOrUsername');
+        const passwordInput = document.getElementById('password');
+        const authError = document.getElementById('authError');
+        const resetPasswordModal = document.getElementById('resetPasswordModal');
+        const forgotPasswordLink = document.getElementById('forgotPasswordLink');
+        const closeResetModal = document.getElementById('closeResetModal');
+        const resetPasswordBtn = document.getElementById('resetPasswordBtn');
+        const resetEmail = document.getElementById('resetEmail');
+        const resetMessage = document.getElementById('resetMessage');
+
+        // Login functionality
+        loginBtn.addEventListener('click', async () => {
+            const emailOrUsername = emailOrUsernameInput.value;
+            const password = passwordInput.value;
+
+            if (!emailOrUsername || !password) {
+                authError.style.display = 'block';
+                authError.textContent = 'Please fill in all fields';
+                return;
+            }
+
+            try {
+                const result = await loginUser(emailOrUsername, password);
+                if (result.success) {
+                    window.location.href = '../index.html';
+                } else {
+                    authError.style.display = 'block';
+                    authError.textContent = result.error;
+                }
+            } catch (error) {
+                authError.style.display = 'block';
+                authError.textContent = error.message;
+            }
+        });
+
+        // Password reset modal functionality
+        forgotPasswordLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            resetPasswordModal.style.display = 'flex';
+            resetMessage.textContent = '';
+            resetEmail.value = '';
+        });
+
+        closeResetModal.addEventListener('click', () => {
+            resetPasswordModal.style.display = 'none';
+        });
+
+        window.addEventListener('click', (e) => {
+            if (e.target === resetPasswordModal) {
+                resetPasswordModal.style.display = 'none';
+            }
+        });
+
+        // Password reset functionality
+        resetPasswordBtn.addEventListener('click', async () => {
+            const email = resetEmail.value.trim();
+            
+            if (!email) {
+                resetMessage.textContent = 'Please enter your email address';
+                resetMessage.className = 'auth-message error';
+                return;
+            }
+
+            try {
+                await sendPasswordResetEmail(auth, email);
+                resetMessage.textContent = 'Password reset email sent! Check your inbox.';
+                resetMessage.className = 'auth-message success';
+                resetEmail.value = '';
+                
+                // Close the modal after 3 seconds
+                setTimeout(() => {
+                    resetPasswordModal.style.display = 'none';
+                }, 3000);
+            } catch (error) {
+                resetMessage.textContent = error.message;
+                resetMessage.className = 'auth-message error';
+            }
+        });
+
+        // Enter key functionality
+        passwordInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                loginBtn.click();
+            }
+        });
+
+        resetEmail.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                resetPasswordBtn.click();
+            }
+        });
     </script>
 </body>
 </html> 

@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile - BOP3000 Tower Defense</title>
+    <link rel="stylesheet" href="../styles.css">
+</head>
+<body>
+    <a href="../index.html" class="back-button">← Back to Game</a>
+    <a href="../leaderboard/index.html" class="leaderboard-button">🏆 Leaderboard</a>
+    <div class="profile-container">
+        <div class="profile-card">
+            <div class="profile-header">
+                <img id="profileFlag" class="profile-flag" src="" alt="Nationality flag">
+                <h1 id="profileUsername" class="profile-username"></h1>
+            </div>
+            <div class="profile-info">
+                <div class="info-group">
+                    <span class="info-label">Email</span>
+                    <span id="profileEmail" class="info-value"></span>
+                </div>
+                <div class="info-group">
+                    <span class="info-label">Nationality</span>
+                    <span id="profileNationality" class="info-value"></span>
+                </div>
+                <div class="info-group">
+                    <span class="info-label">Account Created</span>
+                    <span id="profileDateCreated" class="info-value"></span>
+                </div>
+            </div>
+            <div class="stats-section">
+                <h2 class="stats-title">Game Statistics</h2>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <h3 id="totalDamage">0</h3>
+                        <p>Total Tower Damage</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3 id="totalResources">0</h3>
+                        <p>Resources Gathered</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3 id="totalEnemies">0</h3>
+                        <p>Enemies Killed</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3 id="totalMoney">0</h3>
+                        <p>Money Spent</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3 id="highestWave">0</h3>
+                        <p>Highest Wave</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3 id="totalBosses">0</h3>
+                        <p>Boss Stages</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script type="module">
+        import { auth } from './firebase-config.js';
+        import { getUserData } from './auth-service.js';
+        import { onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js';
+
+        // Country data mapping
+        const countries = [
+            { code: 'af', name: 'Afghanistan' },
+            { code: 'al', name: 'Albania' },
+            // ... (add all countries)
+        ];
+
+        // Function to get country name from code
+        const getCountryName = (code) => {
+            const country = countries.find(c => c.code === code);
+            return country ? country.name : code.toUpperCase();
+        };
+
+        // Function to format numbers with commas
+        const formatNumber = (num) => {
+            return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        };
+
+        // Update stats display
+        function updateStatsDisplay(stats) {
+            document.getElementById('totalDamage').textContent = stats.totalTowerDamage;
+            document.getElementById('totalResources').textContent = stats.totalResourcesGathered;
+            document.getElementById('totalEnemies').textContent = stats.totalEnemiesKilled;
+            document.getElementById('totalMoney').textContent = stats.totalMoneySpent;
+            document.getElementById('highestWave').textContent = stats.highestWaveReached;
+            document.getElementById('totalBosses').textContent = stats.totalBossStagesReached;
+        }
+
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                const result = await getUserData(user.uid);
+                if (result.success) {
+                    const userData = result.data;
+                    document.getElementById('profileUsername').textContent = userData.username;
+                    document.getElementById('profileEmail').textContent = userData.email;
+                    
+                    // Display both country name and use code for flag
+                    const countryCode = userData.nationality.toLowerCase();
+                    document.getElementById('profileNationality').textContent = getCountryName(countryCode);
+                    document.getElementById('profileFlag').src = `https://flagcdn.com/w40/${countryCode}.png`;
+                    
+                    // Format date
+                    const date = new Date(userData.dateCreated.seconds * 1000);
+                    const formattedDate = date.toLocaleDateString('en-US', {
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric'
+                    });
+                    document.getElementById('profileDateCreated').textContent = formattedDate;
+
+                    // Update stats display
+                    updateStatsDisplay(userData.stats || {
+                        totalTowerDamage: 0,
+                        totalResourcesGathered: 0,
+                        totalEnemiesKilled: 0,
+                        totalMoneySpent: 0,
+                        highestWaveReached: 0,
+                        totalBossStagesReached: 0
+                    });
+                }
+            } else {
+                window.location.href = './login.html';
+            }
+        });
+    </script>
+</body>
+</html> 
